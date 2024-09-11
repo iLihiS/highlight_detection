@@ -46,11 +46,21 @@ video {
   left: 0;
 }
 
-.highlight, .temp-highlight {
+.temp-highlight {
   position: absolute;
   height: 20px;
   background-color: #82df7f;
   top: 0;
+  z-index: 1;
+  transition: width 0.1s ease;
+}
+
+.highlight {
+  position: absolute;
+  height: 20px;
+  background-color: #82df7f;
+  top: 0;
+  z-index: 1;
 }
 
 button {
@@ -102,6 +112,7 @@ button {
   width: 100vw;
   z-index: 10;
   margin-top: 0.5vh;
+  display: flex;
 }
 
 .icon {
