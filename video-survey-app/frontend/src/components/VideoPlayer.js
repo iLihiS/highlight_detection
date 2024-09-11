@@ -120,12 +120,24 @@ function VideoPlayer() {
       setCurrentHighlightElement(newHighlightElement); // Keep track of the element
     } else {
       // End highlight: Fix the width and change the class to highlight
-      const highlightDuration = currentTime - highlightStartTime;
-      if (currentHighlightElement) {
-        currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
-        currentHighlightElement.className = 'highlight'; // Change to fixed highlight
+      const highlightEndTime = currentTime;
+      
+      // בדיקה אם זמן הסיום קטן או שווה לזמן ההתחלה
+      if (highlightEndTime <= highlightStartTime) {
+        console.log("Invalid highlight: end time is earlier than start time.");
+        if (currentHighlightElement) {
+          progressContainerRef.current.removeChild(currentHighlightElement);
+        }
+        setCurrentHighlightElement(null);
+      } else {
+        // היילייט תקין
+        const highlightDuration = highlightEndTime - highlightStartTime;
+        if (currentHighlightElement) {
+          currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
+          currentHighlightElement.className = 'highlight'; // Change to fixed highlight
+        }
+        setCurrentHighlightElement(null); // Reset the current highlight
       }
-      setCurrentHighlightElement(null); // Reset the current highlight
     }
 
     setIsHighlighting(!isHighlighting); // Toggle highlight state
