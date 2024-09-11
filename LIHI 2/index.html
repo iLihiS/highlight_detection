@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <img class="logo icon" src="logo.svg" alt="Logo" />
+        <img class="logo nameLogo" src="nameLogo.svg" alt="NameCompany" />
+        <img class="logo sloganLogo" src="sloganLogo.svg" alt="sloganCompany" />
+    </div>
+    <div class="container">
+        <video id="video1" src="Video1 Lior_noy_test2 28_06_2023 18_48_16 1.mp4" muted></video>
+        <video id="video2" src="Video3 Lior_noy_test2 28_06_2023 18_48_16 3.mp4" muted></video>
+        
+        
+        <!-- Toggle button for highlight start and end -->
+        <button id="highlightButton" class="startButton">Highlight Start</button>
+
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+             <!-- Timers -->
+             <div class="timer elapsed-time" id="elapsedTime">00:00</div>
+             <div class="timer remaining-time" id="remainingTime">-00:00</div>
+        </div>
+    </div>
+
+
+    <script src="index.js"></script>
+</body>
+</html>

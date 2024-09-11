@@ -1,0 +1,135 @@
+body {
+    display: inline;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f3f4f6;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+    width: 100vw;
+    height: 50vh;
+}
+
+video {
+    width: 48vw;
+    height: auto;
+    margin: 8vh 0.5vw;
+    border: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.progress-container {
+    position: relative;
+    margin: 5vh auto;
+    width: 94vw;
+    background-color: #e0e0e0;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    height: 20px;
+    width: 0vw;
+    background-color: #878686;
+    transition: width 0.1s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.highlight, .temp-highlight {
+    position: absolute;
+    height: 20px;
+    background-color: #82df7f;
+    top: 0;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid; 
+    border-radius: 5px; 
+}
+
+.startButton {
+    color: black; 
+    background-color: #BEF7BC; 
+    border-color: #BEF7BC;
+}
+
+.stopButton {
+    color: black; 
+    background-color: #FE9A9A; 
+    border-color: #FE9A9A; 
+}
+
+.startButton:hover {
+    color: white;
+    background-color: #82df7f;
+    border-color: #9EDB9A; 
+}
+
+.stopButton:hover {
+    color: white;
+    background-color: #f57c7c;
+    border-color: #F47676; 
+}
+
+.header {
+    position: relative;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 15vh;
+    z-index: 1;
+    background-color:#e5cda7;
+}
+
+.logo{
+    position: absolute;
+    width: 100vw;
+    z-index: 10;
+    margin-top: 0.5vh;
+}
+
+.icon {
+    height: 5.5vh;
+}
+
+.nameLogo {
+    height: 5vh;
+    margin-top: 5.5vh;
+}
+
+.sloganLogo {
+    height: 7vh;
+    margin-top: 8.5vh;
+}
+
+.timer {
+    position: absolute;
+    font-size: 2vh;
+    color: black;
+    z-index: 10;
+}
+
+.elapsed-time {
+    left: 1vw;
+    bottom: 0;
+}
+
+.remaining-time {
+    right: 1vw;
+    bottom: 0;
+}
