@@ -7,61 +7,61 @@ function VideoPlayer() {
   const progressBarRef = useRef(null);
   const progressContainerRef = useRef(null);
 
-  // מצב להצגת הדיב החדש
   const [isReady, setIsReady] = useState(false);
-
   const [totalDuration, setTotalDuration] = useState(0);
   const [highlightStartTime, setHighlightStartTime] = useState(null);
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [currentHighlightElement, setCurrentHighlightElement] = useState(null);
+  const [highlights, setHighlights] = useState([]); // מערך להיילייטים
 
-  // מתבצע רק לאחר שהמשתמש מוכן (isReady)
+  // פונקציה להמרת זמן לפורמט mm:ss:mls
+  const formatTimeMLS = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    const milliseconds = Math.floor((time % 1) * 1000);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`;
+  };
+
   useEffect(() => {
-    if (!isReady) return; // אם המשתמש עדיין לא לחץ על הכפתור, אל תבצע את ה-useEffect
+    if (!isReady) return;
 
     const video1 = video1Ref.current;
     const video2 = video2Ref.current;
 
     if (video1 && video2) {
-      video1.play(); // הפעלת הסרטון הראשון
-      video2.play(); // הפעלת הסרטון השני
+      video1.play();
+      video2.play();
 
-      // מאזין לעצירה של video1 - עוצר את video2
       video1.addEventListener('pause', () => {
         if (!video2.paused) {
           video2.pause();
         }
       });
 
-      // מאזין לעצירה של video2 - עוצר את video1
       video2.addEventListener('pause', () => {
         if (!video1.paused) {
           video1.pause();
         }
       });
 
-      // מאזין להפעלה של video1 - מפעיל את video2 אם הוא לא מנגן
       video1.addEventListener('play', () => {
         if (video2.paused) {
           video2.play();
         }
       });
 
-      // מאזין להפעלה של video2 - מפעיל את video1 אם הוא לא מנגן
       video2.addEventListener('play', () => {
         if (video1.paused) {
           video1.play();
         }
       });
 
-      // מאזין לאירוע seeked של video1 - מעדכן את הזמן של video2 אם הם לא מסונכרנים
       video1.addEventListener('seeked', () => {
         if (Math.abs(video1.currentTime - video2.currentTime) > 0.1) {
           video2.currentTime = video1.currentTime;
         }
       });
 
-      // מאזין לאירוע seeked של video2 - מעדכן את הזמן של video1 אם הם לא מסונכרנים
       video2.addEventListener('seeked', () => {
         if (Math.abs(video2.currentTime - video1.currentTime) > 0.1) {
           video1.currentTime = video2.currentTime;
@@ -77,7 +77,6 @@ function VideoPlayer() {
         const progressPercentage = (currentTime / totalDuration) * 100;
         progressBarRef.current.style.width = `${progressPercentage}%`;
 
-        // אם ההיילייט פעיל, לעדכן את הפס הירוק
         if (isHighlighting && currentHighlightElement) {
           const highlightDuration = currentTime - highlightStartTime;
           currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
@@ -95,9 +94,13 @@ function VideoPlayer() {
         video1.removeEventListener('seeked', () => {});
         video2.removeEventListener('seeked', () => {});
       };
-          
     }
   }, [isReady, totalDuration, isHighlighting, currentHighlightElement, highlightStartTime]);
+
+  // השתמש ב-useEffect להדפסת המערך בכל פעם שהוא מתעדכן
+  useEffect(() => {
+    console.log("Current highlights array:", highlights);
+  }, [highlights]); // יופעל בכל פעם שהמערך משתנה
 
   // הפונקציה שתופעל כאשר לוחצים על הכפתור בדיב החדש
   const handleReadyClick = () => {
@@ -109,7 +112,7 @@ function VideoPlayer() {
     const currentTime = video1.currentTime;
 
     if (!isHighlighting) {
-      // Start highlight: Create a new temp-highlight element and set its position
+      // Start highlight: יצירת אלמנט חדש להיילייט והתחלת זמן
       setHighlightStartTime(currentTime);
 
       const newHighlightElement = document.createElement('div');
@@ -117,11 +120,12 @@ function VideoPlayer() {
       newHighlightElement.style.left = `${(currentTime / totalDuration) * 100}%`;
       newHighlightElement.style.width = '0%'; // Initial width
       progressContainerRef.current.appendChild(newHighlightElement);
-      setCurrentHighlightElement(newHighlightElement); // Keep track of the element
+      setCurrentHighlightElement(newHighlightElement); // שמירת האלמנט הירוק
+      console.log("Highlight started at:", formatTimeMLS(currentTime)); // בדיקה עצמית
     } else {
-      // End highlight: Fix the width and change the class to highlight
+      // End highlight: חישוב הזמן והכנסת ההיילייט למערך
       const highlightEndTime = currentTime;
-      
+
       // בדיקה אם זמן הסיום קטן או שווה לזמן ההתחלה
       if (highlightEndTime <= highlightStartTime) {
         console.log("Invalid highlight: end time is earlier than start time.");
@@ -134,18 +138,27 @@ function VideoPlayer() {
         const highlightDuration = highlightEndTime - highlightStartTime;
         if (currentHighlightElement) {
           currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
-          currentHighlightElement.className = 'highlight'; // Change to fixed highlight
+          currentHighlightElement.className = 'highlight'; // הפיכת האלמנט לקבוע
         }
+
+        // הוספת זמני התחלה וסיום למערך highlights
+        const formattedStart = formatTimeMLS(highlightStartTime);
+        const formattedEnd = formatTimeMLS(highlightEndTime);
+        setHighlights((prevHighlights) => {
+          const newHighlights = [...prevHighlights, [formattedStart, formattedEnd]];
+          console.log("Highlight added:", [formattedStart, formattedEnd]); // בדיקה עצמית
+          return newHighlights;
+        });
+
         setCurrentHighlightElement(null); // Reset the current highlight
       }
     }
 
-    setIsHighlighting(!isHighlighting); // Toggle highlight state
+    setIsHighlighting(!isHighlighting); // מעבר בין מצב פעיל ללא פעיל
   };
 
   return (
     <div className="container">
-      {/* דיב פתיחה */}
       {!isReady && (
         <div className="welcome-screen">
           <img className="logo nameLogo nameLogo-welcome-screen" src="/logo/nameLogo.svg" alt="NameCompany" />
@@ -161,17 +174,14 @@ function VideoPlayer() {
         </div>
       )}
 
-      {/* שאר האלמנטים יוצגו רק כאשר המשתמש לוחץ על הכפתור בדיב הפתיחה */}
       {isReady && (
         <>
-          {/* Header with logos */}
           <div className="header">
             <img className="logo icon" src="/logo/logo.svg" alt="Logo" />
             <img className="logo nameLogo" src="/logo/nameLogo.svg" alt="NameCompany" />
             <img className="logo sloganLogo" src="/logo/sloganLogo.svg" alt="SloganCompany" />
           </div>
 
-          {/* Video elements */}
           <video
             id="video1"
             ref={video1Ref}
@@ -186,15 +196,12 @@ function VideoPlayer() {
             controls
           ></video>
 
-          {/* Highlight start/stop button */}
           <button onClick={handleHighlightClick} className={isHighlighting ? 'stopButton' : 'startButton'}>
             {isHighlighting ? 'End Highlight' : 'Start Highlight'}
           </button>
 
-          {/* Progress Bar */}
           <div className="progress-container" ref={progressContainerRef}>
             <div className="progress-bar" ref={progressBarRef}></div>
-            {/* ההיילייטים יתווספו כאן דינמית */}
           </div>
         </>
       )}
