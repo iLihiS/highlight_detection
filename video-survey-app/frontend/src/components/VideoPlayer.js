@@ -16,6 +16,8 @@ function VideoPlayer() {
   const [currentHighlightElement, setCurrentHighlightElement] = useState(null);
   const [highlights, setHighlights] = useState([]); // מערך להיילייטים
   const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [textNotes, setTextNotes] = useState([]); // מערך לשמירת הטקסט עם הזמן
+  const [inputValue, setInputValue] = useState(""); // הערך של תיבת הטקסט
 
   // פונקציה להמרת זמן לפורמט mm:ss:mls
   const formatTimeMLS = (time) => {
@@ -144,6 +146,22 @@ function VideoPlayer() {
     };
   }, [isSpacePressed, isHighlighting]); // מתעדכן לפי מצב הלחיצה
 
+  // טיפול בהזנת הטקסט ושמירתו עם הזמן הנוכחי
+  const handleTextInput = (e) => {
+    if (e.key === 'Enter') {
+      const video1 = video1Ref.current;
+      const currentTime = formatTimeMLS(video1.currentTime); // הזמן הנוכחי בפורמט mm:ss:mls
+
+      // הוספת הטקסט והזמן למערך
+      setTextNotes((prevNotes) => [...prevNotes, { time: currentTime, note: inputValue }]);
+      console.log("Text note added:", { time: currentTime, note: inputValue });
+      console.log("All text notes:", textNotes); // בדיקה עצמית
+
+      // ניקוי תיבת הטקסט לאחר ההזנה
+      setInputValue("");
+    }
+  };
+
   // הפונקציה שתופעל כאשר לוחצים על הכפתור בדיב החדש
   const handleReadyClick = () => {
     setIsReady(true); // מסתיר את הדיב ומציג את שאר האלמנטים
@@ -245,6 +263,16 @@ function VideoPlayer() {
           <button onClick={() => handleHighlightClick(!isHighlighting)} className={isHighlighting ? 'stopButton' : 'startButton'}>
             {isHighlighting ? 'End Highlight' : 'Start Highlight'}
           </button>
+
+          {/* תיבת הטקסט לקליטת טקסט מהמשתמש */}
+          <input
+            className='text-input'
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleTextInput}
+            placeholder="Enter your note and press Enter"
+          />
 
           <div className="progress-container" ref={progressContainerRef}>
             <div className="progress-bar" ref={progressBarRef}></div>
