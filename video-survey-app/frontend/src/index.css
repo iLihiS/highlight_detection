@@ -53,7 +53,7 @@ body {
 video {
   width: 48vw;
   height: auto;
-  margin: 8vh 0.5vw;
+  margin: 5vh 0.5vw;
   border: none;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 15px;

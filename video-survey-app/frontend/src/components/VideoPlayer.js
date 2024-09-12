@@ -6,6 +6,8 @@ function VideoPlayer() {
   const video2Ref = useRef(null);
   const progressBarRef = useRef(null);
   const progressContainerRef = useRef(null);
+  const elapsedTimeRef = useRef(null); // אלמנט להצגת הזמן שחלף
+  const remainingTimeRef = useRef(null); // אלמנט להצגת הזמן שנותר
 
   const [isReady, setIsReady] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
@@ -13,6 +15,7 @@ function VideoPlayer() {
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [currentHighlightElement, setCurrentHighlightElement] = useState(null);
   const [highlights, setHighlights] = useState([]); // מערך להיילייטים
+  const [isSpacePressed, setIsSpacePressed] = useState(false); // משתנה למעקב אחרי לחיצה על מקש הרווח
 
   // פונקציה להמרת זמן לפורמט mm:ss:mls
   const formatTimeMLS = (time) => {
@@ -20,6 +23,13 @@ function VideoPlayer() {
     const seconds = Math.floor(time % 60);
     const milliseconds = Math.floor((time % 1) * 1000);
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`;
+  };
+
+  // פונקציה להמרת זמן לפורמט mm:ss (ללא מילישניות)
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
   useEffect(() => {
@@ -77,6 +87,10 @@ function VideoPlayer() {
         const progressPercentage = (currentTime / totalDuration) * 100;
         progressBarRef.current.style.width = `${progressPercentage}%`;
 
+        // עדכון השעונים (זמן שחלף וזמן שנותר)
+        elapsedTimeRef.current.textContent = formatTime(currentTime);
+        remainingTimeRef.current.textContent = `-${formatTime(totalDuration - currentTime)}`;
+
         if (isHighlighting && currentHighlightElement) {
           const highlightDuration = currentTime - highlightStartTime;
           currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
@@ -97,10 +111,30 @@ function VideoPlayer() {
     }
   }, [isReady, totalDuration, isHighlighting, currentHighlightElement, highlightStartTime]);
 
-  // השתמש ב-useEffect להדפסת המערך בכל פעם שהוא מתעדכן
+  // טיפול בלחיצה על רווח (התחלת היילייט) ושחרור רווח (סיום היילייט)
   useEffect(() => {
-    console.log("Current highlights array:", highlights);
-  }, [highlights]); // יופעל בכל פעם שהמערך משתנה
+    const handleKeyDown = (event) => {
+      if (event.code === 'Space' && !isSpacePressed) {
+        setIsSpacePressed(true);
+        handleHighlightClick(); // התחלת היילייט
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (event.code === 'Space' && isSpacePressed) {
+        setIsSpacePressed(false);
+        handleHighlightClick(); // סיום היילייט
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isSpacePressed]); // מתעדכן לפי מצב הלחיצה
 
   // הפונקציה שתופעל כאשר לוחצים על הכפתור בדיב החדש
   const handleReadyClick = () => {
@@ -196,12 +230,17 @@ function VideoPlayer() {
             controls
           ></video>
 
+          <p>You can use the button below or space-button to highlight</p>
+
           <button onClick={handleHighlightClick} className={isHighlighting ? 'stopButton' : 'startButton'}>
             {isHighlighting ? 'End Highlight' : 'Start Highlight'}
           </button>
 
           <div className="progress-container" ref={progressContainerRef}>
             <div className="progress-bar" ref={progressBarRef}></div>
+            {/* הצגת השעונים */}
+            <div className="timer elapsed-time" ref={elapsedTimeRef}>00:00</div>
+            <div className="timer remaining-time" ref={remainingTimeRef}>-00:00</div>
           </div>
         </>
       )}
