@@ -63,12 +63,14 @@ function VideoPlayer() {
       video1.addEventListener('play', () => {
         if (video2.paused && !video2.ended) {
           video2.play().catch((error) => console.log(error));
+
         }
       });
 
       video2.addEventListener('play', () => {
         if (video1.paused && !video1.ended) {
           video1.play().catch((error) => console.log(error));
+
         }
       });
 
@@ -104,6 +106,7 @@ function VideoPlayer() {
       };
 
       video1.addEventListener('timeupdate', updateProgressBar);
+
 
       return () => {
         video1.removeEventListener('timeupdate', updateProgressBar);
@@ -191,6 +194,7 @@ function VideoPlayer() {
       // End highlight: חישוב הזמן והכנסת ההיילייט למערך
       const highlightEndTime = currentTime;
 
+      // בדיקה אם זמן הסיום קטן או שווה לזמן ההתחלה
       if (highlightEndTime <= highlightStartTime) {
         console.log("Invalid highlight: end time is earlier than start time.");
         if (currentHighlightElement) {
@@ -198,12 +202,14 @@ function VideoPlayer() {
         }
         setCurrentHighlightElement(null);
       } else {
+        // היילייט תקין
         const highlightDuration = highlightEndTime - highlightStartTime;
         if (currentHighlightElement) {
           currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
           currentHighlightElement.className = 'highlight'; // הפיכת האלמנט לקבוע
         }
 
+        // הוספת זמני התחלה וסיום למערך highlights
         const formattedStart = formatTimeMLS(highlightStartTime);
         const formattedEnd = formatTimeMLS(highlightEndTime);
         setHighlights((prevHighlights) => {
