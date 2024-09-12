@@ -1,13 +1,214 @@
 body {
+  display: inline;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #f3f4f6;
+  font-family: Arial, sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.container {
+  text-align: center;
+  width: 100vw;
+  height: 50vh;
+}
+
+.header {
+  position: relative;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 15vh;
+  z-index: 1;
+  background-color:#e5cda7;
+}
+
+.logo{
+  position: absolute;
+  width: 100vw;
+  z-index: 10;
+  margin-top: 0.5vh;
+  display: flex;
+}
+
+.icon {
+  height: 5.5vh;
+}
+
+.nameLogo {
+  height: 5vh;
+  margin-top: 5.5vh;
+  
+}
+
+.sloganLogo {
+  height: 7vh;
+  margin-top: 8.5vh;
+}
+
+video {
+  width: 48vw;
+  height: auto;
+  margin: 8vh 0.5vw;
+  border: none;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+}
+
+.progress-container {
+  position: relative;
+  margin: 3vh auto;
+  width: 94vw;
+  background-color: #e0e0e0;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+  height: 20px;
+  width: 0vw;
+  background-color: #878686;
+  transition: width 0.1s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.temp-highlight {
+  position: absolute;
+  height: 20px;
+  background-color: #82df7f;
+  top: 0;
+  z-index: 1;
+  transition: width 0.1s ease;
+}
+
+.highlight {
+  position: absolute;
+  height: 20px;
+  background-color: #82df7f;
+  top: 0;
+  z-index: 1;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid; 
+  border-radius: 5px; 
+}
+
+.startButton {
+  color: black; 
+  background-color: #BEF7BC; 
+  border-color: #BEF7BC;
+}
+
+.stopButton {
+  color: black; 
+  background-color: #FE9A9A; 
+  border-color: #FE9A9A; 
+}
+
+.startButton:hover {
+  color: white;
+  background-color: #82df7f;
+  border-color: #9EDB9A; 
+}
+
+.stopButton:hover {
+  color: white;
+  background-color: #f57c7c;
+  border-color: #F47676; 
+}
+
+.timer {
+  position: absolute;
+  font-size: 2vh;
+  color: black;
+  z-index: 10;
+}
+
+.elapsed-time {
+  left: 1vw;
+  bottom: 0;
+}
+
+.remaining-time {
+  right: 1vw;
+  bottom: 0;
+}
+
+.WelcomeScreen{
+  height: 60vh;
+  top: 5vh;
+}
+
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ded0b9;
+  text-align: center;
+}
+
+.nameLogo-welcome-screen {
+  top: 3vh;
+}
+
+.logo-welcome-screen {
+  top: 15vh;
+  height: 50vh;
+}
+
+.text-welcome-screen {
+  position: absolute;
+  width: 100vw;
+  z-index: 10;
+  display: flex;
+  top:70vh;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-screen h1 {
+  font-size: 2em;
+  color: #333;
+  margin-top: 20px;
+  width: 70vw;
+  top: 70vh;
+  height: 10vh;
+  align-items: center;
+  display: flex;
+}
+.textWelcomeScreen {
+  width: 70vw;
+}
+
+.readyButton {
+  padding: 15px 30px;
+  font-size: 18px;
+  background-color: #82df7f;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  width: 500px;
+  margin-top: -0.5vh;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.readyButton:hover {
+  background-color: #6bcf6d;
 }
