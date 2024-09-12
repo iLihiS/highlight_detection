@@ -4,8 +4,7 @@ import VideoPlayer from './components/VideoPlayer';
 const App = () => {
   return (
     <div>
-      <h1>Video Survey</h1>
-      <VideoPlayer videoSrc="https://path-to-your-video.mp4" />
+      <VideoPlayer />
     </div>
   );
 };
