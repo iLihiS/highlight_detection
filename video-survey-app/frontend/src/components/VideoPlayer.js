@@ -6,8 +6,8 @@ function VideoPlayer() {
   const video2Ref = useRef(null);
   const progressBarRef = useRef(null);
   const progressContainerRef = useRef(null);
-  const elapsedTimeRef = useRef(null); // אלמנט להצגת הזמן שחלף
-  const remainingTimeRef = useRef(null); // אלמנט להצגת הזמן שנותר
+  const elapsedTimeRef = useRef(null);
+  const remainingTimeRef = useRef(null);
 
   const [isReady, setIsReady] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
@@ -15,7 +15,7 @@ function VideoPlayer() {
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [currentHighlightElement, setCurrentHighlightElement] = useState(null);
   const [highlights, setHighlights] = useState([]); // מערך להיילייטים
-  const [isSpacePressed, setIsSpacePressed] = useState(false); // משתנה למעקב אחרי לחיצה על מקש הרווח
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
 
   // פונקציה להמרת זמן לפורמט mm:ss:mls
   const formatTimeMLS = (time) => {
@@ -39,30 +39,34 @@ function VideoPlayer() {
     const video2 = video2Ref.current;
 
     if (video1 && video2) {
-      video1.play();
-      video2.play();
+      if (video1.paused && !video1.ended) {
+        video1.play().catch((error) => console.log(error));
+      }
+      if (video2.paused && !video2.ended) {
+        video2.play().catch((error) => console.log(error));
+      }
 
       video1.addEventListener('pause', () => {
-        if (!video2.paused) {
+        if (!video2.paused && !video2.ended) {
           video2.pause();
         }
       });
 
       video2.addEventListener('pause', () => {
-        if (!video1.paused) {
+        if (!video1.paused && !video1.ended) {
           video1.pause();
         }
       });
 
       video1.addEventListener('play', () => {
-        if (video2.paused) {
-          video2.play();
+        if (video2.paused && !video2.ended) {
+          video2.play().catch((error) => console.log(error));
         }
       });
 
       video2.addEventListener('play', () => {
-        if (video1.paused) {
-          video1.play();
+        if (video1.paused && !video1.ended) {
+          video1.play().catch((error) => console.log(error));
         }
       });
 
@@ -116,14 +120,18 @@ function VideoPlayer() {
     const handleKeyDown = (event) => {
       if (event.code === 'Space' && !isSpacePressed) {
         setIsSpacePressed(true);
-        handleHighlightClick(); // התחלת היילייט
+        if (!isHighlighting) {
+          handleHighlightClick(true); // התחלת היילייט עם רווח
+        }
       }
     };
 
     const handleKeyUp = (event) => {
       if (event.code === 'Space' && isSpacePressed) {
         setIsSpacePressed(false);
-        handleHighlightClick(); // סיום היילייט
+        if (isHighlighting) {
+          handleHighlightClick(false); // סיום היילייט עם רווח
+        }
       }
     };
 
@@ -134,19 +142,24 @@ function VideoPlayer() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isSpacePressed]); // מתעדכן לפי מצב הלחיצה
+  }, [isSpacePressed, isHighlighting]); // מתעדכן לפי מצב הלחיצה
 
   // הפונקציה שתופעל כאשר לוחצים על הכפתור בדיב החדש
   const handleReadyClick = () => {
     setIsReady(true); // מסתיר את הדיב ומציג את שאר האלמנטים
   };
 
-  const handleHighlightClick = () => {
+  const handleHighlightClick = (isStarting) => {
     const video1 = video1Ref.current;
     const currentTime = video1.currentTime;
 
-    if (!isHighlighting) {
-      // Start highlight: יצירת אלמנט חדש להיילייט והתחלת זמן
+    if (!isReady || video1.paused || currentTime === 0) {
+      video1.play(); // במידה והסרטון לא מתנגן, נתחיל את הסרטון
+      return; // לא מבצעים היילייט עד שהסרטון מתחיל לשחק
+    }
+
+    if (isStarting) {
+      // Start highlight: יצירת אלמנט חדש להיילייט והתחלת זמן מהנקודה הנוכחית
       setHighlightStartTime(currentTime);
 
       const newHighlightElement = document.createElement('div');
@@ -160,7 +173,6 @@ function VideoPlayer() {
       // End highlight: חישוב הזמן והכנסת ההיילייט למערך
       const highlightEndTime = currentTime;
 
-      // בדיקה אם זמן הסיום קטן או שווה לזמן ההתחלה
       if (highlightEndTime <= highlightStartTime) {
         console.log("Invalid highlight: end time is earlier than start time.");
         if (currentHighlightElement) {
@@ -168,14 +180,12 @@ function VideoPlayer() {
         }
         setCurrentHighlightElement(null);
       } else {
-        // היילייט תקין
         const highlightDuration = highlightEndTime - highlightStartTime;
         if (currentHighlightElement) {
           currentHighlightElement.style.width = `${(highlightDuration / totalDuration) * 100}%`;
           currentHighlightElement.className = 'highlight'; // הפיכת האלמנט לקבוע
         }
 
-        // הוספת זמני התחלה וסיום למערך highlights
         const formattedStart = formatTimeMLS(highlightStartTime);
         const formattedEnd = formatTimeMLS(highlightEndTime);
         setHighlights((prevHighlights) => {
@@ -188,7 +198,7 @@ function VideoPlayer() {
       }
     }
 
-    setIsHighlighting(!isHighlighting); // מעבר בין מצב פעיל ללא פעיל
+    setIsHighlighting(isStarting); // מעבר בין מצב פעיל ללא פעיל
   };
 
   return (
@@ -232,7 +242,7 @@ function VideoPlayer() {
 
           <p>You can use the button below or space-button to highlight</p>
 
-          <button onClick={handleHighlightClick} className={isHighlighting ? 'stopButton' : 'startButton'}>
+          <button onClick={() => handleHighlightClick(!isHighlighting)} className={isHighlighting ? 'stopButton' : 'startButton'}>
             {isHighlighting ? 'End Highlight' : 'Start Highlight'}
           </button>
 
